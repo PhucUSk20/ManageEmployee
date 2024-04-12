@@ -1,7 +1,5 @@
 package com.ashstudios.safana.ui.leave_management;
 
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -9,12 +7,10 @@ import androidx.lifecycle.ViewModel;
 
 import com.ashstudios.safana.models.LeaveModel;
 import com.ashstudios.safana.ui.worker_details.WorkerDetailsViewModel;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 
 public class LeaveManagementViewModel extends ViewModel {
@@ -36,9 +32,14 @@ public class LeaveManagementViewModel extends ViewModel {
                             String name = document.getString("name");
                             String img_url = document.getString("profile_image");
                             String dateend = document.getString("to");
-                            LeaveModel leaveModel = new LeaveModel(name, reason, img_url, empid, datesign,dateend);
-                            leaveModels.add(leaveModel);
-                            if(listener != null) {
+                            String status = document.getString("Status");
+                            if(status==null) {
+                                LeaveModel leaveModel = new LeaveModel(name, reason, img_url, empid, datesign, dateend);
+                                leaveModels.add(leaveModel);
+                            }else{
+
+                            }
+                            if (listener != null) {
                                 listener.onDataChanged();
                             }
                         }

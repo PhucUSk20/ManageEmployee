@@ -8,9 +8,38 @@ import java.util.List;
 public class UserModel {
     String name,role,profile_img,emp_id,mail,mobile,sex,birthdate,password;
     List<String> allowance_ids;
+    List<String> projectID;
+    List<String> taskID;
     boolean isSelected;
-    private Timestamp createdTimestamp;
+
     private String fcmToken;
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public List<String> getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(List<String> projectID) {
+        this.projectID = projectID;
+    }
+
+    public List<String> getTaskID() {
+        return taskID;
+    }
+
+    public void setTaskID(List<String> taskID) {
+        this.taskID = taskID;
+    }
+
+    private Timestamp createdTimestamp;
+
 
     public UserModel() {
     }
@@ -126,12 +155,5 @@ public class UserModel {
 
     public void setCreatedTimestamp(Timestamp createdTimestamp) {
         this.createdTimestamp = createdTimestamp;
-    }
-    public String getFcmToken() {
-        return fcmToken;
-    }
-
-    public void setFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
     }
 }

@@ -1,5 +1,9 @@
 package com.ashstudios.safana.utils;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+
+import com.ashstudios.safana.others.SharedPref;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -12,9 +16,13 @@ import java.util.List;
 
 public class FirebaseUtil {
 
+    private static String currentUserId;
     public static String currentUserId(){
 
-        return null;//FirebaseAuth.getInstance().getUid();
+        return currentUserId;
+    }
+    public static void setCurrentUserId(String id){
+        currentUserId = id;
     }
 
     public static boolean isLoggedIn(){
@@ -24,12 +32,12 @@ public class FirebaseUtil {
         return false;
     }
 
-    public static DocumentReference currentUserDetails(){
-        return FirebaseFirestore.getInstance().collection("users").document(currentUserId());
+    public static DocumentReference currentUserDetails(String currentUserId){
+        return FirebaseFirestore.getInstance().collection("Employees").document(currentUserId);
     }
 
     public static CollectionReference allUserCollectionReference(){
-        return FirebaseFirestore.getInstance().collection("users");
+        return FirebaseFirestore.getInstance().collection("Employees");
     }
 
     public static DocumentReference getChatroomReference(String chatroomId){
@@ -60,8 +68,9 @@ public class FirebaseUtil {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     public static String timestampToString(Timestamp timestamp){
-        return new SimpleDateFormat("HH:MM").format(timestamp.toDate());
+        return new SimpleDateFormat("HH:mm").format(timestamp.toDate());
     }
 
     public static void logout(){

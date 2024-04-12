@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,7 +31,9 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -38,7 +41,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -64,6 +69,7 @@ public class ChatActivity extends AppCompatActivity {
     UserModel userModel;
     String employeeId2;
     String currentUserId2;
+    String namecurrent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,7 @@ public class ChatActivity extends AppCompatActivity {
         SharedPref sharedPref = new SharedPref(context);
         String currentUserId = sharedPref.getEMP_ID();
         currentUserId2 = currentUserId;
-
+        FirebaseUtil.setCurrentUserId(currentUserId);
         db=FirebaseFirestore.getInstance();
         String employeeId = getIntent().getStringExtra("EMPLOYEE_ID");
         db.collection("Employees").document(employeeId).get().addOnCompleteListener(task -> {
@@ -113,6 +119,7 @@ public class ChatActivity extends AppCompatActivity {
                     String birthdate = document.getString("birth_date");
                     String password = document.getString("password");
                     List<String> allowanceIds = (List<String>) document.get("allowance_ids");
+                    namecurrent = name;
                     userModel = new UserModel(name, role, profileImg, empId, mail, mobile, sex, birthdate, password, allowanceIds);
                 }
             } else {
@@ -124,6 +131,7 @@ public class ChatActivity extends AppCompatActivity {
         //  otherUser = AndroidUtil.getUserModelFromIntent(getIntent());
         employeeId2 = employeeId;
         chatroomId = FirebaseUtil.getChatroomId(currentUserId, employeeId);
+        resetUnreadMessageCount(currentUserId, chatroomId);
 
         messageInput = findViewById(R.id.chat_message_input);
         sendMessageBtn = findViewById(R.id.message_send_btn);
@@ -174,10 +182,38 @@ public class ChatActivity extends AppCompatActivity {
 
     void sendMessageToUser(String message) {
 
-        chatroomModel.setLastMessageTimestamp(Timestamp.now());
-        chatroomModel.setLastMessageSenderId(currentUserId2);
-        chatroomModel.setLastMessage(message);
-        FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel);
+     //   chatroomModel.setLastMessageTimestamp(Timestamp.now());
+     //   chatroomModel.setLastMessageSenderId(currentUserId2);
+     //   chatroomModel.setLastMessage(message);
+     //   updateUnreadMessageCountForEmployee(chatroomId,employeeId2);
+     //   FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel);
+
+            // Truy vấn chatroom hiện tại
+            DocumentReference chatroomRef = FirebaseUtil.getChatroomReference(chatroomId);
+            chatroomRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    ChatroomModel currentChatroom = task.getResult().toObject(ChatroomModel.class);
+                    if (currentChatroom != null) {
+                        // Cập nhật unreadMessageCount và các thông tin khác nếu cần
+                        Map<String, Integer> unreadMessageCount = currentChatroom.getUnreadMessageCount();
+                        unreadMessageCount.put(employeeId2, unreadMessageCount.getOrDefault(employeeId2, 0) + 1);
+                        currentChatroom.setUnreadMessageCount(unreadMessageCount);
+
+                        currentChatroom.setLastMessageTimestamp(Timestamp.now());
+                        currentChatroom.setLastMessageSenderId(currentUserId2);
+                        currentChatroom.setLastMessage(message);
+
+                        // Cập nhật lại chatroom
+                        chatroomRef.set(currentChatroom, SetOptions.merge());
+                    }
+                } else {
+                    // Xử lý lỗi
+                    Log.e("updateChatroom", "Error getting chatroom for update", task.getException());
+                }
+            });
+
+
+
 
         ChatMessageModel chatMessageModel = new ChatMessageModel(message, currentUserId2, Timestamp.now());
         FirebaseUtil.getChatroomMessageReference(chatroomId).add(chatMessageModel)
@@ -191,6 +227,38 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
     }
+    void updateUnreadMessageCountForEmployee(String chatroomId, String receiverId) {
+        // Reference tới document của chatroom trong collection 'Chatrooms'
+        DocumentReference chatroomRef = FirebaseFirestore.getInstance().collection("chatrooms").document(chatroomId);
+
+        // Sử dụng transaction để đảm bảo tính nhất quán của dữ liệu
+        FirebaseFirestore.getInstance().runTransaction(transaction -> {
+            DocumentSnapshot chatroomSnapshot = transaction.get(chatroomRef);
+
+            // Lấy map tin nhắn chưa đọc hiện tại và cập nhật
+            Map<String, Long> unreadCountMap = (Map<String, Long>) chatroomSnapshot.get("unreadMessageCount");
+            if (unreadCountMap == null) {
+                Log.e("updateUnread", "Error updating unread count");
+                unreadCountMap = new HashMap<>();
+            }
+            Long unreadCount = unreadCountMap.getOrDefault(receiverId, 0L);
+            unreadCountMap.put(receiverId, unreadCount + 1);
+
+            // Quan trọng: Bạn cần cập nhật lại document với giá trị mới
+            transaction.update(chatroomRef, "unreadMessageCount", unreadCountMap);
+
+            // Return null because this transaction does not return any result
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            // Xử lý khi cập nhật thành công
+            Log.d("updateUnread", "Success");
+        }).addOnFailureListener(e -> {
+            // Xử lý khi có lỗi
+            Log.e("updateUnread", "Error updating unread count", e);
+        });
+    }
+
+
 
     void getOrCreateChatroomModel() {
         FirebaseUtil.getChatroomReference(chatroomId).get().addOnCompleteListener(task -> {
@@ -198,12 +266,13 @@ public class ChatActivity extends AppCompatActivity {
                 chatroomModel = task.getResult().toObject(ChatroomModel.class);
                 if (chatroomModel == null) {
                     //first time chat
-
+                    Map<String, Integer> initialUnreadCount = new HashMap<>();
                     chatroomModel = new ChatroomModel(
                             chatroomId,
                             Arrays.asList(currentUserId2, employeeId2),
                             Timestamp.now(),
-                            ""
+                            "",
+                            initialUnreadCount
                     );
                     FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel);
                 }
@@ -216,7 +285,7 @@ public class ChatActivity extends AppCompatActivity {
             JSONObject jsonObject = new JSONObject();
 
             JSONObject notificationObj = new JSONObject();
-            notificationObj.put("title", "Phuc");
+            notificationObj.put("title", namecurrent);
             notificationObj.put("body", message);
 
             JSONObject dataObj = new JSONObject();
@@ -244,7 +313,7 @@ public class ChatActivity extends AppCompatActivity {
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
-                .header("Authorization", "Bearer YOUR_API_KEY")
+                .header("Authorization", "Bearer AAAAhkPUNQU:APA91bH62Ca923Ij8UKQqeUTcZNOGV6kKJyZmDHvadlJ2VPM82K1-7_iTOZUgWWnU1xYgzucndNgZtDHcS83a0JRXHGC_STEz1zyijHErwIxlVA0cDf4bQgLTVrRb8RseLX1_j5mbep5")
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -258,5 +327,24 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    void resetUnreadMessageCount(String currentUserId, String chatroomId) {
+        DocumentReference chatroomRef = FirebaseFirestore.getInstance().collection("chatrooms").document(chatroomId);
+        chatroomRef.get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                ChatroomModel chatroom = documentSnapshot.toObject(ChatroomModel.class);
+                if(chatroom != null){
+                    Map<String, Integer> unreadMessageCount = chatroom.getUnreadMessageCount();
+                    if(unreadMessageCount != null && unreadMessageCount.containsKey(currentUserId)){
+                        // Đặt lại giá trị về 0
+                        unreadMessageCount.put(currentUserId, 0);
+                        chatroomRef.update("unreadMessageCount", unreadMessageCount)
+                                .addOnSuccessListener(aVoid -> Log.d("ResetUnread", "Unread message count reset successfully"))
+                                .addOnFailureListener(e -> Log.e("ResetUnread", "Error resetting unread message count", e));
+                    }
+                }
+            }
+        }).addOnFailureListener(e -> Log.e("Firestore", "Error getting chatroom document", e));
     }
 }

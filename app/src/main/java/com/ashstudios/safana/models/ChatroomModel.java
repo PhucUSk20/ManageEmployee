@@ -3,6 +3,7 @@ package com.ashstudios.safana.models;
 import com.google.firebase.Timestamp;
 
 import java.util.List;
+import java.util.Map;
 
 public class ChatroomModel {
     String chatroomId;
@@ -10,15 +11,24 @@ public class ChatroomModel {
     Timestamp lastMessageTimestamp;
     String lastMessageSenderId;
     String lastMessage;
+    Map<String, Integer> unreadMessageCount;
 
     public ChatroomModel() {
     }
 
-    public ChatroomModel(String chatroomId, List<String> userIds, Timestamp lastMessageTimestamp, String lastMessageSenderId) {
+    public ChatroomModel(String chatroomId, List<String> userIds, Timestamp lastMessageTimestamp, String lastMessageSenderId, Map<String, Integer> unreadMessageCount) {
         this.chatroomId = chatroomId;
         this.userIds = userIds;
         this.lastMessageTimestamp = lastMessageTimestamp;
         this.lastMessageSenderId = lastMessageSenderId;
+        this.unreadMessageCount = unreadMessageCount;
+    }
+    public Map<String, Integer> getUnreadMessageCount() {
+        return unreadMessageCount;
+    }
+
+    public void setUnreadMessageCount(Map<String, Integer> unreadMessageCount) {
+        this.unreadMessageCount = unreadMessageCount;
     }
 
     public String getChatroomId() {
