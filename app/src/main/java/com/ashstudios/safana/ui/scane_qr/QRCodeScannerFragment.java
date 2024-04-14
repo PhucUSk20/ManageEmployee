@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -189,17 +190,31 @@ public class QRCodeScannerFragment extends Fragment {
 
         locationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
-                // Giả sử vị trí mong muốn của bạn là lat=10.123456 và lon=106.654321
-                Location targetLocation = new Location(""); //provider name is unnecessary
-                targetLocation.setLatitude(10.7667518); //your coords of course
-                targetLocation.setLongitude(106.6951052);
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("QR_Location").document("3bce812c-ad70-4055-8389-aaf578616939").get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            GeoPoint geoPoint = document.getGeoPoint("position");
+                            if (geoPoint != null) {
+                                Location targetLocation = new Location(""); //provider name is unnecessary
+                                targetLocation.setLatitude(geoPoint.getLatitude());
+                                targetLocation.setLongitude(geoPoint.getLongitude());
 
-                float distance = location.distanceTo(targetLocation);
-                if (distance <= 100) { // Nếu người dùng trong phạm vi 100 mét
-                    postData(id, name, date);
-                } else {
-                    Toast.makeText(getActivity(), "Bạn không ở trong khu vực cho phép.", Toast.LENGTH_LONG).show();
-                }
+                                float distance = location.distanceTo(targetLocation);
+                                if (distance <= 100) {
+                                    postData(id, name, date);
+                                } else {
+                                    Toast.makeText(getActivity(), "Bạn không ở trong khu vực cho phép.", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Không thể tìm thấy thông tin vị trí.", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Lỗi khi truy vấn vị trí: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
             } else {
                 Toast.makeText(getActivity(), "Không thể lấy vị trí hiện tại.", Toast.LENGTH_LONG).show();
             }
