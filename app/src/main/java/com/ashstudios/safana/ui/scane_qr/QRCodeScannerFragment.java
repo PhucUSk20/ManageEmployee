@@ -40,8 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,35 +151,45 @@ public class QRCodeScannerFragment extends Fragment {
             }
         }
     }
-    public void postData(String id, String name, String date) {
-        DatabaseReference dateRef = database.getReference("userScans").child(date);
+    public void postData(String id, String name, String dateString) {
+        try {
+            // Định dạng ngày bạn nhận được, giả sử là "yyyy-MM-dd"
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            LocalDate date = LocalDate.parse(dateString, formatter);
+            LocalDate today = LocalDate.now();
 
-        String scanId = dateRef.push().getKey();
-        LocalTime now = LocalTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String formattedTime = now.format(formatter);
+            // Kiểm tra nếu ngày đã qua
+            if (date.isBefore(today)) {
+                Toast.makeText(getActivity(), "QR đã hết hạn.", Toast.LENGTH_LONG).show();
+                return; // Không tiếp tục lưu dữ liệu
+            }
 
-        Map<String, Object> scanData = new HashMap<>();
-        scanData.put("userId", id);
-        scanData.put("userName", name);
-        scanData.put("scanTime", formattedTime);
-        scanData.put("state", "Present");
+            // Nếu ngày hợp lệ, tiếp tục lưu dữ liệu như bình thường
+            DatabaseReference dateRef = database.getReference("userScans").child(dateString);
+            String scanId = dateRef.push().getKey();
+            LocalTime now = LocalTime.now();
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            String formattedTime = now.format(timeFormatter);
 
-        // Gửi dữ liệu lên Firebase, dưới node ngày và với ID duy nhất cho mỗi lần quét
-        if (scanId != null) {
-            dateRef.child(scanId).setValue(scanData)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
+            Map<String, Object> scanData = new HashMap<>();
+            scanData.put("userId", id);
+            scanData.put("userName", name);
+            scanData.put("scanTime", formattedTime);
+            scanData.put("state", "Present");
+
+            if (scanId != null) {
+                dateRef.child(scanId).setValue(scanData)
+                        .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                // Dữ liệu đã được gửi thành công
                                 Toast.makeText(getActivity(), "Data saved successfully", Toast.LENGTH_SHORT).show();
                             } else {
-                                // Đã xảy ra lỗi
                                 Toast.makeText(getActivity(), "Failed to save data", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                    });
+                        });
+            }
+
+        } catch (DateTimeParseException e) {
+            Toast.makeText(getActivity(), "Invalid date format", Toast.LENGTH_LONG).show();
         }
     }
     private void checkLocationAndPostData(String id, String name, String date) {
@@ -191,7 +203,7 @@ public class QRCodeScannerFragment extends Fragment {
         locationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("QR_Location").document("3bce812c-ad70-4055-8389-aaf578616939").get().addOnCompleteListener(task -> {
+                db.collection("QR_Location").document("Location").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {

@@ -37,8 +37,9 @@ public class TasksViewModel extends ViewModel {
                             String name = document.getString("Task Name");
                             String duDate = document.getString("Due Date");
                             String status = document.getString("Status(%)");
+                            String empID = document.getString("EMP ID");
 
-                            TaskModel taskModel = new TaskModel(status, taskID,name,duDate);
+                            TaskModel taskModel = new TaskModel(status, taskID,name,duDate, empID);
                             taskModels.add(taskModel);
                             if (listener != null) {
                                 listener.onDataChanged();

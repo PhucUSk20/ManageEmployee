@@ -199,7 +199,8 @@ public class CalendarFragment extends Fragment implements TaskCalendarAdapter.On
                             String taskName = document.getString("Task Name");
                             String dueDate = document.getString("Due Date");
                             String status = document.getString("Status(%)");
-                            TaskModel taskModel = new TaskModel(status, taskID, taskName, dueDate);
+                            String empID = document.getString("EMP ID");
+                            TaskModel taskModel = new TaskModel(status, taskID, taskName, dueDate, empID);
                             taskModels.add(taskModel);
                         }
                         supervisorTaskAdapter.notifyDataSetChanged();

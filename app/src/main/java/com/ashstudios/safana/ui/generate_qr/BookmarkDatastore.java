@@ -47,9 +47,9 @@ public class BookmarkDatastore {
 
     public void addBookmark(Marker bookmark) {
         if (bookmark.getId() == null || bookmark.getId().isEmpty()) {
-            bookmark.setId(UUID.randomUUID().toString());
+            bookmark.setId("Location");
         }
-
+        bookmark.setId("Location");
         GeoPoint geoPoint = new GeoPoint(bookmark.getPosition().getLatitude(), bookmark.getPosition().getLongitude());
         Bookmark newBookmark = new Bookmark(bookmark.getId(), geoPoint, bookmark.getTitle(), bookmark.getSubDescription());
         Log.d("Firestore", "Trying to write: " + newBookmark);

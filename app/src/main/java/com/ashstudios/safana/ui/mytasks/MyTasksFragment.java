@@ -1,5 +1,6 @@
 package com.ashstudios.safana.ui.mytasks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class MyTasksFragment extends Fragment {
     private ConstraintLayout constraintLayout;
     private ArrayList<TaskModel> arrayListMutableLiveData;
     ArrayList<TaskModel> tasks = new ArrayList<>();
+
     FirebaseFirestore db;
     TextView tv;
     private Boolean isUndo = false;
@@ -69,32 +71,11 @@ public class MyTasksFragment extends Fragment {
         //set the adapter
         taskAdapter = new TaskAdapter(getActivity(),tasks);
         recyclerView.setAdapter(taskAdapter);
-
         Context context = getContext();
         SharedPref sharedPref = new SharedPref(context);
         String currentUserId = sharedPref.getEMP_ID();
         Log.d(TAG, currentUserId);
         tv.setText(" ");
-        if (tasks.isEmpty()) {
-            db = FirebaseFirestore.getInstance();
-            db.collection("Employees").document(currentUserId).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        List<String> taskIds = (List<String>) document.get("taskID");
-                        if (taskIds != null) {
-                            getTaskDetails(taskIds);
-                        }
-                    }
-                } else {
-
-                }
-            });
-        } else {
-            taskAdapter.notifyDataSetChanged();
-        }
-
-
         enableSwipeToCompleteAndUndo();
         return root;
     }
@@ -214,8 +195,9 @@ public class MyTasksFragment extends Fragment {
                         String name = document.getString("Task Name");
                         String duDate = document.getString("Due Date");
                         String status = document.getString("Status(%)");
+                        String empid = document.getString("EMP ID");
                         if(status != null && !status.equals("100")){
-                            TaskModel taskModel = new TaskModel(status, taskId, name, duDate);
+                            TaskModel taskModel = new TaskModel(status, taskId, name, duDate, empid);
                             arrayListMutableLiveData.add(taskModel);
                             tasks.add(taskModel);
                             tv.setText(" ");
@@ -233,5 +215,45 @@ public class MyTasksFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateTasksFromDatabase();
+    }
+
+    private void updateTasksFromDatabase() {
+        Context context = getContext();
+        SharedPref sharedPref = new SharedPref(context);
+        String currentUserId = sharedPref.getEMP_ID();
+
+        if (currentUserId != null && !currentUserId.isEmpty()) {
+            tv.setText("Loading tasks...");
+            tasks.clear();  // Clear the current list of tasks
+            db = FirebaseFirestore.getInstance();
+            db.collection("Employees").document(currentUserId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+                        List<String> taskIds = (List<String>) document.get("taskID");
+                        if (taskIds != null && !taskIds.isEmpty()) {
+                            getTaskDetails(taskIds);
+                        } else {
+                            tv.setText("No tasks assigned.");
+                            taskAdapter.notifyDataSetChanged(); // Notify adapter about data set changes
+                        }
+                    } else {
+                        tv.setText("No tasks found.");
+                        taskAdapter.notifyDataSetChanged(); // Notify adapter about data set changes
+                    }
+                } else {
+                    Log.e(TAG, "Error getting documents: ", task.getException());
+                    tv.setText("Failed to load tasks.");
+                    taskAdapter.notifyDataSetChanged(); // Notify adapter about data set changes
+                }
+            });
+        } else {
+            tv.setText("Invalid user ID.");
+        }
+    }
 
 }
