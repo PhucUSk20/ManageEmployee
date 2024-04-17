@@ -61,7 +61,8 @@ public class LeaveManagementRVAdapter extends RecyclerView.Adapter<LeaveManageme
                 String date = leaveModel.getDate();
                 String dateend = leaveModel.getDateEnd();
                 String reason = leaveModel.getReason();
-                LeaveManagementFragment.showLeaveDialog(v.getContext(),date,dateend,reason,holder.getAbsoluteAdapterPosition());
+                String empid = leaveModel.getEmp_id();
+                LeaveManagementFragment.showLeaveDialog(v.getContext(),date,dateend,reason,holder.getAbsoluteAdapterPosition(),empid);
             }
         });
     }

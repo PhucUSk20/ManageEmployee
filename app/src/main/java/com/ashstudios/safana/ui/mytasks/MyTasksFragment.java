@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -75,6 +76,9 @@ public class MyTasksFragment extends Fragment {
         SharedPref sharedPref = new SharedPref(context);
         String currentUserId = sharedPref.getEMP_ID();
         Log.d(TAG, currentUserId);
+        if (currentUserId != null && !currentUserId.isEmpty()) {
+            checkLeaveRequests(currentUserId);
+        }
         tv.setText(" ");
         enableSwipeToCompleteAndUndo();
         return root;
@@ -255,5 +259,45 @@ public class MyTasksFragment extends Fragment {
             tv.setText("Invalid user ID.");
         }
     }
+    private void checkLeaveRequests(String currentUserId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Leaves")
+                .whereEqualTo("empid", currentUserId)
+                .whereEqualTo("notify", "unread")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            String status = document.getString("Status");
+                            showStatusDialog(status, document);
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                });
+    }
 
+    private void showStatusDialog(String status, DocumentSnapshot document) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        if ("Accept".equals(status)) {
+            builder.setMessage("Yêu cầu nghỉ phép của bạn đã được chấp thuận.");
+        } else if ("Reject".equals(status)) {
+            builder.setMessage("Yêu cầu nghỉ phép của bạn đã bị từ chối.");
+        } else {
+            return; 
+        }
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            dialog.dismiss();
+            markNotificationAsRead(document.getId());
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void markNotificationAsRead(String documentId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Leaves").document(documentId)
+                .update("notify", "read")
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "DocumentSnapshot successfully updated!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error updating document", e));
+    }
 }

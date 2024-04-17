@@ -28,6 +28,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LeaveManagementFragment extends Fragment {
 
     static private LeaveManagementViewModel leaveManagementViewModel;
@@ -62,7 +65,7 @@ public class LeaveManagementFragment extends Fragment {
 
         return root;
     }
-    public static void showLeaveDialog(Context context,String Date,String DateEnd,String Reason,int position){
+    public static void showLeaveDialog(Context context,String Date,String DateEnd,String Reason,int position, String empid){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.leave_management_dialog,null);
@@ -81,7 +84,10 @@ public class LeaveManagementFragment extends Fragment {
         AlertDialog dialog = builder.create();
         //
         btn_accept.setOnClickListener(v -> {
-            db.collection("Leaves").document(Date).update("Status","Accept")
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("Status", "Accept");
+            updates.put("notify", "unread");
+            db.collection("Leaves").document(Date+empid).update(updates)
                     .addOnCompleteListener(aVoid->{
                         Log.d("TAG","Add Status Accept success");
                     })
@@ -92,7 +98,10 @@ public class LeaveManagementFragment extends Fragment {
             dialog.dismiss();
         });
         btn_reject.setOnClickListener(v -> {
-            db.collection("Leaves").document(Date).update("Status","Reject")
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("Status", "Reject");
+            updates.put("notify", "unread");
+            db.collection("Leaves").document(Date+empid).update(updates)
                     .addOnCompleteListener(aVoid->{
                         Log.d("TAG","Add Status Reject success");
                     })

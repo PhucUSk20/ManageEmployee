@@ -33,7 +33,7 @@ public class LeaveManagementViewModel extends ViewModel {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                             String empid = document.getString("empid");
-                            String datesign = document.getId();
+                            String datesign = document.getString("date");
                             String reason = document.getString("reason");
                             String name = document.getString("name");
                             String img_url = document.getString("profile_image");
