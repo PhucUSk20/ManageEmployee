@@ -60,10 +60,8 @@ public class WebviewFragment extends Fragment {
         webView.loadUrl(url);
     }
 
-    // Implement your sign-in logic
     private void signInWithGoogle() {
-        // Handle the sign-in process and set the isSignedIn state accordingly.
-        // After a successful sign-in, you can load the WebView with the desired URL.
+
     }
 
 }

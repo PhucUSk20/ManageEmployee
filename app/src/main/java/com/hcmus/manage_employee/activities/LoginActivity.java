@@ -58,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
                         else {
                             documentID = (editText.getText().toString().trim());
                             dialog.show();
-                            //check if it is the first user or not
                             db.collection("Employees").document(documentID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {

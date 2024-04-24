@@ -45,7 +45,7 @@ public class QRCodeScannerFragment extends Fragment {
 
     private static final int LOCATION_PERMISSION_REQUEST = 1;
 
-    private static final String TAG = "QRCodeScannerActivity"; // Add a tag for your logs
+    private static final String TAG = "QRCodeScannerActivity";
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -74,10 +74,6 @@ public class QRCodeScannerFragment extends Fragment {
                 checkLocationAndPostData(currentUserId, currentUserName, dateString);
 
                 if (decryptedData != null && decryptedData.startsWith("http")) {
-                    // Modify the Intent to use "url" as the key
-                    //Intent webViewIntent = new Intent(getActivity(), WebviewActivity.class);
-                    //webViewIntent.putExtra("url", decryptedData); // Pass the scanned URL as an extra
-                    //startActivity(webViewIntent);
                 } else {
                     Toast.makeText(getActivity(), "Scanned QR Code: Its not Correct QR Code", Toast.LENGTH_SHORT).show();
                 }

@@ -79,7 +79,6 @@ public class AllowanceManagementFragment extends Fragment {
                     String employeeName = chip.getText().toString();
                     selectedEmployees.add(employeeName);
                 }
-                // Cập nhật Firestore
                 updateEmployeesAllowances(selectedEmployees, selectedAllowance);
 
                 Toast.makeText(getContext(), "Granted Allowance!", Toast.LENGTH_SHORT).show();
@@ -89,8 +88,6 @@ public class AllowanceManagementFragment extends Fragment {
             }
         });
 
-        String[] arraySpinner = new String[] {"-- Select Allowance --","Food Allowance", "Travel Allowance", "Laptop", "Accommodation"};
-        String[] arr = new String[] {"Harsh Saglani", "Krunal Pande", "Rohit Suthar", "Manav Shah", "John Doe", "Robert Downey Jr.","Carry Minati","Tanmay Bhatt", "Bhuvan Bam", "Parth Nakil","Chaitanya Dhakre","David Levithan","Dan Brown","Bill gates","Anthony Horowitz"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1 , employeeNames);
         ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item, allowanceNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -129,28 +126,24 @@ public class AllowanceManagementFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CREATE_ALLOWANCE_REQUEST && resultCode == Activity.RESULT_OK) {
-            // Gọi phương thức để cập nhật dữ liệu
             fetchAllowances();
         }
     }
     private void fetchAllowances() {
         db.collection("Allowances").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                allowanceNames.clear(); // Xóa dữ liệu cũ
+                allowanceNames.clear();
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String allowanceName = document.getId();
                     allowanceNames.add(allowanceName);
                 }
-                // Đảm bảo cập nhật UI trên main thread
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        // Cập nhật adapter của spinner
                         ArrayAdapter<String> spinnerAdapter = (ArrayAdapter<String>) spinner.getAdapter();
                         spinnerAdapter.notifyDataSetChanged();
                     });
                 }
             } else {
-                // Xử lý lỗi
             }
         });
     }
@@ -158,36 +151,28 @@ public class AllowanceManagementFragment extends Fragment {
     private void fetchEmployees() {
         db.collection("Employees").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                employeeNames.clear(); // Xóa dữ liệu cũ
+                employeeNames.clear();
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String employeeName = document.getString("name");
                     employeeNames.add(employeeName);
                 }
-                // Đảm bảo cập nhật UI trên main thread
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        // Cập nhật adapter của autoCompleteTextView
                         ArrayAdapter<String> autoCompleteAdapter = (ArrayAdapter<String>) autoCompleteTextView.getAdapter();
                         autoCompleteAdapter.notifyDataSetChanged();
                     });
                 }
             } else {
-                // Xử lý lỗi
             }
         });
     }
     private void updateEmployeesAllowances(ArrayList<String> employeeNames, String allowance) {
-        // Lấy ID của allowance từ tên, nếu bạn lưu tên làm key, thì bỏ qua bước này
-
-        // Duyệt qua từng Employee và cập nhật allowance_ids
         for (String employeeName : employeeNames) {
             db.collection("Employees").whereEqualTo("name", employeeName)
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             DocumentReference employeeRef = documentSnapshot.getReference();
-
-                            // Thêm allowance vào list, giả sử allowance_ids là một ArrayList
                             employeeRef.update("allowance_ids", FieldValue.arrayUnion(allowance))
                                     .addOnSuccessListener(aVoid -> Log.d("Update", "Allowance added successfully"))
                                     .addOnFailureListener(e -> Log.d("Update", "Error adding allowance", e));

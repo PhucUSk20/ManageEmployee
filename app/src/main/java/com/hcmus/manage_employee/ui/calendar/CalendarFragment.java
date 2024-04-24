@@ -78,7 +78,6 @@ public class CalendarFragment extends Fragment implements TaskCalendarAdapter.On
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        //set the adapter
         supervisorTaskAdapter = new SupervisorTaskAdapter(getActivity(), taskModels);
         recyclerView.setAdapter(supervisorTaskAdapter);
         supervisorTaskAdapter.notifyDataSetChanged();
@@ -113,14 +112,11 @@ public class CalendarFragment extends Fragment implements TaskCalendarAdapter.On
         String month = String.valueOf(selectedDate.getMonthValue());
         String finalMonth = String.format("%02d", Integer.parseInt(month));
 
-
-
-        // Initialize Firestore outside the completion listener
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Tasks").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Set<String> daySet = new HashSet<>(); // Initialize daySet here
-                dateList = new ArrayList<>(); // Initialize dateList here
+                Set<String> daySet = new HashSet<>();
+                dateList = new ArrayList<>();
 
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String dueDate = document.getString("Due Date");
@@ -129,14 +125,14 @@ public class CalendarFragment extends Fragment implements TaskCalendarAdapter.On
                     }
                 }
 
-                daysInMonth = new ArrayList<>(); // Initialize daysInMonth here
+                daysInMonth = new ArrayList<>();
 
                 for (int i = 1; i <= 42; i++) {
                     if (i <= startDayOfWeekValue || i > size + startDayOfWeekValue) {
                         daysInMonth.add(new DayModel(" ", finalMonth, year, Color.WHITE));
                     } else {
                         String day = String.valueOf(i - startDayOfWeekValue);
-                        String date = day + "/"+ finalMonth +"/" +year;    //bind elements of the date to compare
+                        String date = day + "/"+ finalMonth +"/" +year;
                         //Log.d(TAG, date);
                         if (dateList.contains(date)) {
                             daysInMonth.add(new DayModel(day, finalMonth, year, Color.GREEN));
@@ -147,7 +143,6 @@ public class CalendarFragment extends Fragment implements TaskCalendarAdapter.On
                     }
                 }
 
-                // Update UI on the main thread
                 getActivity().runOnUiThread(() -> {
                     calendarRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 7));
                     taskCalendarAdapter = new TaskCalendarAdapter(daysInMonth, this);
@@ -178,7 +173,7 @@ public class CalendarFragment extends Fragment implements TaskCalendarAdapter.On
     @Override
     public void onItemClick(int position, String dayText) {
         if(!dayText.equals("")) {
-            taskModels.clear();   //clear taskModels to display new events
+            taskModels.clear();
             GetData(dayText);
         }
     }

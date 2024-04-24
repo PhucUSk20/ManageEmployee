@@ -53,9 +53,7 @@ public class ProjectDetailsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        //set the adapter
         supervisorProjectAdapter = new SupervisorProjectAdapter(getActivity(),projectDetailsViewModel.getArrayListMutableLiveData());
-        //tasksViewModel.sort(new Bundle());
         recyclerView.setAdapter(supervisorProjectAdapter);
         projectDetailsViewModel.setDataChangedListener(() -> {
             getActivity().runOnUiThread(() -> {

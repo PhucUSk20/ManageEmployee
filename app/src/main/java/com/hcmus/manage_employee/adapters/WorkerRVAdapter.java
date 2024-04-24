@@ -60,7 +60,6 @@ public class WorkerRVAdapter extends RecyclerView.Adapter<WorkerRVAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, WorkerProfileActivity.class);
-                // Assuming WorkerModel has a method getId() to get the employee's unique ID
                 intent.putExtra("EMPLOYEE_ID", workerModel.getEmp_id());
                 mContext.startActivity(intent);
 

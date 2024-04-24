@@ -82,7 +82,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
                         }
 
                     } else {
-                        // Handle task failure
                     }
                 });
     }

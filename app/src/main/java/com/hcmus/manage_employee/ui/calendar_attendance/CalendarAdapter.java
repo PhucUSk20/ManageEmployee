@@ -65,13 +65,11 @@ class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>
                 } else if (greenDays.get(i).getFrequency() < 0) {
                     holder.calendarCellLL.setBackgroundColor(gray);
                 }
-//                holder.parentLayout.setBackgroundColor(Color.GREEN);
             }
         }
         holder.itemView.setOnClickListener(v -> {
             if (onItemListener != null) {
-                String dayText = String.valueOf(dayItem.getDay()); // Convert day to string
-                // Sử dụng thông tin từ dayItem
+                String dayText = String.valueOf(dayItem.getDay());
                 int day = dayItem.getDay();
                 int month = dayItem.getMonth();
                 if (month == 13 ) {
@@ -86,7 +84,7 @@ class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder>
                 }
                String chuoi ="Selected Date "+day+" "+month+" "+year;
 
-                onItemListener.onItemClick(position, chuoi); // Pass day as a string
+                onItemListener.onItemClick(position, chuoi);
             }
         });
     }

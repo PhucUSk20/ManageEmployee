@@ -156,16 +156,14 @@ public class ProjectStatusFragment extends Fragment {
                                         arrayListMutableLiveData.add(projectModel);
                                         projectAdapter.notifyDataSetChanged();
 
-                                    } else {//tasksTask.isSuccessful()
+                                    } else {
 
                                     }
                                 });
 
                     } else {
-                        // Handle the case where the document does not exist
                     }
                 } else {
-                    // Handle failures
                 }
             });
         }

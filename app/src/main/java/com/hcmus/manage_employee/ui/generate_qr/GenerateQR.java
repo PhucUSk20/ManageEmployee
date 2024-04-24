@@ -55,7 +55,6 @@ public class GenerateQR extends Fragment {
              //   if (!link.startsWith("http://") && !link.startsWith("https://")) {
              //       link = "http://" + link;
              //   }
-             //
 
                 String fullLink =  "http://"+ dateString;
                 String encryptedLink = encryptLink(fullLink);

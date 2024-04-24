@@ -30,17 +30,14 @@ public class WorkerProfileActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         employeeId = getIntent().getStringExtra("EMPLOYEE_ID");
-        // Lấy tham chiếu đến Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Lấy chi tiết nhân viên từ Firestore
         if (employeeId != null) {
             db.collection("Employees").document(employeeId).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document != null && document.exists()) {
                         WorkerModel worker = document.toObject(WorkerModel.class);
-                        // Cập nhật UI với thông tin nhân viên
                         if (worker != null) {
                             updateUI(worker);
                         }
@@ -64,7 +61,6 @@ public class WorkerProfileActivity extends AppCompatActivity {
         }
     }
     private void updateUI(WorkerModel workerModel) {
-        // Ví dụ: Cập nhật ImageView và TextView
         ImageView profileImage = findViewById(R.id.profile_img);
         TextView tvEmpId = findViewById(R.id.tv_emp_id), empName = findViewById(R.id.emp_name),
                 empRole = findViewById(R.id.emp_role), tvEmail = findViewById(R.id.tv_email),
@@ -73,12 +69,9 @@ public class WorkerProfileActivity extends AppCompatActivity {
         TextView tvTaskAssigned = findViewById(R.id.tv_task_assigned);
         TextView tvTaskComplete = findViewById(R.id.tv_task_completed);
 
-        // Sử dụng Picasso hoặc một thư viện tương tự để load hình ảnh
         Picasso.get().load(workerModel.getImgUrl()).into(profileImage);
 
-        // Cập nhật thông tin nhân viên vào TextView
-        // Giả sử bạn đã thêm các getter trong WorkerModel
-        tvEmpId.setText(employeeId); // Hoặc cách khác để lấy ID
+        tvEmpId.setText(employeeId);
         empName.setText(workerModel.getName());
         empRole.setText(workerModel.getRole());
         tvEmail.setText(workerModel.getMail());
@@ -89,7 +82,7 @@ public class WorkerProfileActivity extends AppCompatActivity {
             String allowances = TextUtils.join("\n", workerModel.getAllowance_ids());
             tvAllowance.setText(allowances);
         } else {
-            tvAllowance.setText("No allowances"); // Hoặc một giá trị placeholder khác
+            tvAllowance.setText("No allowances");
         }
         if (workerModel.getTaskID() != null && !workerModel.getTaskID().isEmpty()) {
             int numberOfTasks = workerModel.getTaskID().size();

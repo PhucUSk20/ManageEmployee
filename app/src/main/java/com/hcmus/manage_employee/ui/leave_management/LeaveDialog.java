@@ -25,11 +25,10 @@ public class    LeaveDialog {
         Button btn_accept = view.findViewById(R.id.btn_accept);
         Button btn_reject = view.findViewById(R.id.btn_reject);
         Button btn_calendar = view.findViewById(R.id.btn_go_to_calender);
-        //
         ll_date.setText(Date);
         ll_dateend.setText(DateEnd);
         ll_reason.setText(Reason);
-        //
+
         db = FirebaseFirestore.getInstance();
         db.collection("Leaves").whereEqualTo("empid",emp_id).get()
                 .addOnCompleteListener(task -> {

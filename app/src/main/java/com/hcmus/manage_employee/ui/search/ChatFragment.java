@@ -57,7 +57,6 @@ public class ChatFragment extends Fragment {
         adapter = new RecentChatRecyclerAdapter(options, getContext()) {
             @Override
             public void onDataChanged() {
-                // Nếu không có items, hiển thị TextView
                 if (getItemCount() == 0) {
                     view.findViewById(R.id.tv_no_conversations).setVisibility(View.VISIBLE);
                 } else {

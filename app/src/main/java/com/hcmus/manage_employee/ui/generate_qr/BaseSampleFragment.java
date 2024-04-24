@@ -29,16 +29,13 @@ import androidx.fragment.app.Fragment;
 import com.hcmus.manage_employee.R;
 
 public abstract class BaseSampleFragment extends Fragment {
-    private static int MENU_LAST_ID = Menu.FIRST; // Always set to last unused id
+    private static int MENU_LAST_ID = Menu.FIRST;
     public static final String TAG = "osmBaseFrag";
 
     AlertDialog gotoLocationDialog = null;
 
     public abstract String getSampleTitle();
 
-    // ===========================================================
-    // Fields
-    // ===========================================================
 
     protected MapView mMapView;
 
@@ -152,11 +149,9 @@ public abstract class BaseSampleFragment extends Fragment {
         MENU_LAST_ID++;
         MENU_GOTO = MENU_LAST_ID;
         menu.add(0, MENU_GOTO, Menu.NONE, "Go To");
-        // Put overlay items first
         try {
             mMapView.getOverlayManager().onCreateOptionsMenu(menu, MENU_LAST_ID, mMapView);
         } catch (NullPointerException npe) {
-            //can happen during CI tests and very rapid fragment switching
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -173,7 +168,6 @@ public abstract class BaseSampleFragment extends Fragment {
             item.setChecked(mMapView.isTilesScaledToDpi());
             mMapView.getOverlayManager().onPrepareOptionsMenu(menu, MENU_LAST_ID, mMapView);
         } catch (NullPointerException npe) {
-            //can happen during CI tests and very rapid fragment switching
         }
         super.onPrepareOptionsMenu(menu);
     }
@@ -183,7 +177,6 @@ public abstract class BaseSampleFragment extends Fragment {
         if (item.getItemId() == MENU_GOTO) {
             //TODO dialog with lat/lon prompt
             Log.d(TAG, "Selected menu item ID: " + item.getItemId());
-            //prompt for input params
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
             View view = View.inflate(getActivity(), R.layout.gotolocation, null);

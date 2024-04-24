@@ -36,7 +36,7 @@ public class BookmarkDatastore {
                         markers.add(m);
                     }
                 }
-                onMarkersReady.accept(markers); // Gửi danh sách markers đã được tải về callback
+                onMarkersReady.accept(markers);
             } else {
                 Log.w("Firestore", "Error getting documents.", task.getException());
             }
@@ -129,6 +129,5 @@ public class BookmarkDatastore {
     }
 
     public void close() {
-        // Không cần thực hiện gì vì Firebase Firestore quản lý tài nguyên tự động
     }
 }

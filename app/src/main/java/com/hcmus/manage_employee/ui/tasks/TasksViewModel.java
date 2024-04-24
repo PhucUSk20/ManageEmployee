@@ -52,7 +52,7 @@ public class TasksViewModel extends ViewModel {
 
     public void sort(Bundle b) {
         Comparator<TaskModel> comparator = Comparator.comparing(TaskModel::getDate);
-        Collections.sort(taskModels, comparator); // Sort the list using the comparator
+        Collections.sort(taskModels, comparator);
     }
 
     public void sort_completed(Bundle b) {
@@ -65,7 +65,6 @@ public class TasksViewModel extends ViewModel {
             }
         }
 
-        // Replace taskModels with the sorted list of completed tasks
         taskModels.clear();
         taskModels.addAll(completedTasks);
 
@@ -85,11 +84,9 @@ public class TasksViewModel extends ViewModel {
             }
         }
 
-        // Replace taskModels with the sorted list of completed tasks
         taskModels.clear();
         taskModels.addAll(completedTasks);
 
-        // Notify listener if needed
         if (listener != null) {
             listener.onDataChanged();
         }

@@ -25,7 +25,6 @@ public class BottomSheetSortFragment extends BottomSheetDialogFragment {
 
 
     public BottomSheetSortFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -37,13 +36,12 @@ public class BottomSheetSortFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_bottom_sheet_sort, container, false);
         final Chip chip_name = view.findViewById(R.id.chip_sort_name);
         final Chip chip_male = view.findViewById(R.id.chip_filter_male);
         final Chip chip_female = view.findViewById(R.id.chip_filter_female);
 
-        // for remembering the sorting. Otherwise default sorting is always displayed not the selected one
+
         Bundle sorting = getArguments();
         if( !sorting.isEmpty() )
         {

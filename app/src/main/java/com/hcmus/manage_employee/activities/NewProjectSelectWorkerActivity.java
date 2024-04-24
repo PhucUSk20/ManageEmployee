@@ -91,7 +91,6 @@ public class NewProjectSelectWorkerActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(NewProjectSelectWorkerActivity.this, "Please choose suitable employees!", Toast.LENGTH_LONG).show();
                 }
-                //return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

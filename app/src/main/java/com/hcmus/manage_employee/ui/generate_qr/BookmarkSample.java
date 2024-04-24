@@ -58,10 +58,10 @@ public class BookmarkSample extends BaseSampleFragment implements LocationListen
         super.addOverlays();
         if (datastore == null)
             datastore = new BookmarkDatastore();
-        //add all our bookmarks to the view
+
         datastore.getBookmarksAsMarkers(mMapView, markers -> {
-            // Trong lambda này, 'markers' là danh sách các marker đã sẵn sàng
-            mMapView.getOverlayManager().addAll(markers); // Thêm tất cả các marker vào mapView
+
+            mMapView.getOverlayManager().addAll(markers);
             mMapView.invalidate(); // Yêu cầu mapView cập nhật để hiển thị các thay đổi
         });
         this.mMyLocationOverlay = new MyLocationNewOverlay(mMapView);
@@ -138,9 +138,6 @@ public class BookmarkSample extends BaseSampleFragment implements LocationListen
                     valid = false;
 
                 if (valid) {
-                    //Xóa tất cả bookmark hiện tại
-                   // datastore.removeAllBookmarks();
-                    // Xóa tất cả markers trên bản đồ
                     mMapView.getOverlayManager().clear();
                     mMapView.invalidate();
 

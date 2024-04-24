@@ -47,7 +47,6 @@ public class AllowancesFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setFocusable(false);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        //set the adapter
         allowanceAdapter = new AllowanceAdapter(getActivity(),allowances);
         recyclerView.setAdapter(allowanceAdapter);
         Context context = getContext();
@@ -96,7 +95,6 @@ public class AllowancesFragment extends Fragment {
                         AllowanceModel allowance = new AllowanceModel(url, document.getId(), duration);
                         allowances.add(allowance);
                         arrayListMutableLiveData.add(allowance);
-                        // Update your adapter here
                         allowanceAdapter.notifyDataSetChanged();
                     }
                 } else {

@@ -17,7 +17,6 @@ public class ProjectDetailsViewModel extends ViewModel {
     private ArrayList<ProjectModel> projectModels;
     private WorkerDetailsViewModel.DataChangedListener listener;
     public ProjectDetailsViewModel() {
-        //mText = new MutableLiveData<>();
         projectModels = new ArrayList<>();
         getData();
     }

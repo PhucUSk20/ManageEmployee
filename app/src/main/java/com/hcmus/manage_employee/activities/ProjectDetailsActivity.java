@@ -223,7 +223,6 @@ public class ProjectDetailsActivity extends AppCompatActivity {
             values.add(new PointValue(i, i+1));
         }
 
-        //In most cased you can call data model methods in builder-pattern-like manner.
         Line line = new Line(values).setColor(Color.BLUE).setCubic(true);
         List<Line> lines = new ArrayList<>();
         lines.add(line);

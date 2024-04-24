@@ -53,7 +53,7 @@ public class LeaveManagementViewModel extends ViewModel {
     }
     public void sort(Bundle b) {
         Comparator<LeaveModel> comparator = Comparator.comparing(LeaveModel::getDate);
-        Collections.sort(leaveModels, comparator); // Sort the list using the comparator
+        Collections.sort(leaveModels, comparator);
     }
 
     public void sort_name(Bundle b) {

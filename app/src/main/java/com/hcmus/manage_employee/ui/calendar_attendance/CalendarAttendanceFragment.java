@@ -252,22 +252,14 @@ public class CalendarAttendanceFragment extends Fragment implements CalendarAdap
     @Override
     public void onItemClick(int position, String dayText)
     {
-        //    if(!dayText.isEmpty())
-        //    {
         String message = "Selected Date " + dayText + " " + monthYearFromDate(selectedDate);
         Toast.makeText(getActivity(), dayText, Toast.LENGTH_LONG).show();
-        //    }
     }
 
 
     private void loadUserAttendance(String userId) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-// Thay đổi URL sau đây theo cấu trúc của Firebase Database của bạn
         DatabaseReference ref = database.getReference("userScans");
-
-
-// Truy cập và kiểm tra từng năm, từng tháng, từng ngày
-// Lưu ý: Bạn cần xác định khoảng thời gian để tìm kiếm (ví dụ: các năm từ 2020 đến 2024)
         for (int year = 2020; year <= 2024; year++) {
             for (int month = 1; month <= 12; month++) {
                 for (int day = 1; day <= 31; day++) {
@@ -281,17 +273,16 @@ public class CalendarAttendanceFragment extends Fragment implements CalendarAdap
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 String userId = snapshot.child("userId").getValue(String.class);
                                 if (userId.equals(userId)) {
-                                    // Chèn vào greenDay
                                     greenDays.add(new DayItem(finalDay, finalMonth, finalYear, 5));
                                     Calendar today = Calendar.getInstance();
                                     int currentYear = today.get(Calendar.YEAR);
                                     int currentMonth = today.get(Calendar.MONTH)+1;
                                     if (finalYear == currentYear && finalMonth == currentMonth) {
-                                        attendanceCount++; // Tăng biến đếm nếu tháng và năm giống nhau
+                                        attendanceCount++;
                                     }
                                     attendanceCountTV.setText("Trong tháng này bạn đã điểm danh " + attendanceCount + " ngày");
                                     setMonthView(greenDays);
-                                    break; // Tìm thấy userId, không cần kiểm tra thêm trong ngày này
+                                    break;
                                 }
                             }
                         }

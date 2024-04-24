@@ -37,7 +37,6 @@ public class SearchViewModel extends ViewModel {
                                             for (QueryDocumentSnapshot document : Objects.requireNonNull(task2.getResult())) {
                                                 String empId = document.getId();
 
-                                                // Kiểm tra nếu nhân viên đã tồn tại trong workerModels
                                                 boolean isExisting = empId.equals(userId);
                                                 for (WorkerModel existingWorker : workerModels) {
                                                     if(existingWorker.getEmp_id().equals(empId)){

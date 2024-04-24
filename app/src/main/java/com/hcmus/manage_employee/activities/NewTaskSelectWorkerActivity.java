@@ -48,7 +48,6 @@ public class NewTaskSelectWorkerActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setFocusable(false);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        //set the adapter
         selectedWorkerForTaskAdapter = new SelectedWorkerForTaskAdapter(this,workers);
         recyclerView.setAdapter(selectedWorkerForTaskAdapter);
 
@@ -105,7 +104,6 @@ public class NewTaskSelectWorkerActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(NewTaskSelectWorkerActivity.this, "Please choose suitable employee!", Toast.LENGTH_LONG).show();
                 }
-                //return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

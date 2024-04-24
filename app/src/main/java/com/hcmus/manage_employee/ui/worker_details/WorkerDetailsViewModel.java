@@ -31,9 +31,7 @@ public class WorkerDetailsViewModel extends ViewModel {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Duyệt qua mỗi document trong collection
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                            // Lấy dữ liệu từ mỗi document và tạo instance mới của WorkerModel
                             String name = document.getString("name");
                             String role = document.getString("role");
                             String profileImg = document.getString("profile_image");
@@ -57,15 +55,13 @@ public class WorkerDetailsViewModel extends ViewModel {
                 });
     }
 
-//    "https://i.imgur.com/[0-9a-zA-Z]*.(jpg|png)
 
     public ArrayList<WorkerModel> getWorkerModels() {
         return workerModels;
     }
     public void clearAllWorkers() {
-        workerModels.clear();  // Xóa tất cả các mục trong danh sách
+        workerModels.clear();
 
-        // Thông báo cho listener về sự thay đổi dữ liệu
         if (listener != null) {
             listener.onDataChanged();
         }

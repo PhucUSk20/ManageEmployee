@@ -66,7 +66,6 @@ public class WorkerChatAdapter extends RecyclerView.Adapter<WorkerChatAdapter.Vi
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ChatActivity.class);
-                // Assuming WorkerModel has a method getId() to get the employee's unique ID
                 intent.putExtra("EMPLOYEE_ID", workerModel.getEmp_id());
                 mContext.startActivity(intent);
 

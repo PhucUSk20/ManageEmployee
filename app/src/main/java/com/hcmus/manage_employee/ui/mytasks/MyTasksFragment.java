@@ -62,7 +62,7 @@ public class MyTasksFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        //set the adapter
+
         taskAdapter = new TaskAdapter(getActivity(),tasks);
         recyclerView.setAdapter(taskAdapter);
         Context context = getContext();
@@ -144,7 +144,7 @@ public class MyTasksFragment extends Fragment {
 
     private void sort_date(){
         Comparator<TaskModel> comparator = Comparator.comparing(TaskModel::getDate);
-        Collections.sort(tasks, comparator); // Sort the list using the comparator
+        Collections.sort(tasks, comparator);
         taskAdapter.notifyDataSetChanged();
     }
 
@@ -198,7 +198,6 @@ public class MyTasksFragment extends Fragment {
                             arrayListMutableLiveData.add(taskModel);
                             tasks.add(taskModel);
                             tv.setText(" ");
-                            // Update your adapter here
                             taskAdapter.notifyDataSetChanged();
                         }else{
                             tv.setText("NO ASSIGNMENTS");
@@ -225,7 +224,7 @@ public class MyTasksFragment extends Fragment {
 
         if (currentUserId != null && !currentUserId.isEmpty()) {
             tv.setText("Loading tasks...");
-            tasks.clear();  // Clear the current list of tasks
+            tasks.clear();
             db = FirebaseFirestore.getInstance();
             db.collection("Employees").document(currentUserId).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -236,16 +235,16 @@ public class MyTasksFragment extends Fragment {
                             getTaskDetails(taskIds);
                         } else {
                             tv.setText("No tasks assigned.");
-                            taskAdapter.notifyDataSetChanged(); // Notify adapter about data set changes
+                            taskAdapter.notifyDataSetChanged();
                         }
                     } else {
                         tv.setText("No tasks found.");
-                        taskAdapter.notifyDataSetChanged(); // Notify adapter about data set changes
+                        taskAdapter.notifyDataSetChanged();
                     }
                 } else {
                     Log.e(TAG, "Error getting documents: ", task.getException());
                     tv.setText("Failed to load tasks.");
-                    taskAdapter.notifyDataSetChanged(); // Notify adapter about data set changes
+                    taskAdapter.notifyDataSetChanged();
                 }
             });
         } else {

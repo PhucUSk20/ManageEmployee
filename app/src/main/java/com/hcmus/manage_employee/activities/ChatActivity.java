@@ -288,7 +288,6 @@ public class ChatActivity extends AppCompatActivity {
                 if(chatroom != null){
                     Map<String, Integer> unreadMessageCount = chatroom.getUnreadMessageCount();
                     if(unreadMessageCount != null && unreadMessageCount.containsKey(currentUserId)){
-                        // Đặt lại giá trị về 0
                         unreadMessageCount.put(currentUserId, 0);
                         chatroomRef.update("unreadMessageCount", unreadMessageCount)
                                 .addOnSuccessListener(aVoid -> Log.d("ResetUnread", "Unread message count reset successfully"))
