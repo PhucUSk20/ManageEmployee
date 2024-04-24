@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdk 33
     defaultConfig {
-        applicationId "com.ashstudios.safana"
+        applicationId "com.hcmus.manage_employee"
         minSdk 26
         targetSdk 33
         versionCode 1
@@ -20,7 +20,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    namespace 'com.ashstudios.safana'
+    namespace 'com.hcmus.manage_employee'
 }
 
 dependencies {
