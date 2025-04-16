@@ -107,11 +107,10 @@ A mobile and web-based system designed to streamline workforce management within
 ## ✅ Technologies Used
 
 - **Mobile Development**: Android (Java)  
-- **Database & Backend**: Firebase Realtime Database, Firebase Authentication  
-- **Communication**: Firebase Cloud Messaging (FCM)  
-- **QR Code**: ZXing (QR Code Generator/Scanner)  
-- **Realtime Features**: Firebase & Socket  
+- **Database & Backend**: Firebase Realtime Database, Firebase Storage, Firestore Database
+- **QR Code**: Google Library (QR Code Generator/Scanner)
+- **Map**: OpenStreetMap 
 - **Calendar Visualization**: Custom GitHub-style Calendar  
-- **UI/UX**: Material Design, Custom Icons
+
 
 
